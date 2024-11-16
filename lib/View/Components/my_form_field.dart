@@ -21,6 +21,9 @@ class MyFormField extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: width * 0.06),
       child: TextFormField(
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.inversePrimary,
+        ),
         obscureText: obscureText,
         validator: (value) {
           if (value == null || value.isEmpty) {

@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 class AuthButton extends StatelessWidget {
   VoidCallback onTap;
   String text;
+  bool loading;
   AuthButton({
     super.key,
     required this.onTap,
     required this.text,
+    required this.loading,
   });
 
   @override
@@ -24,15 +26,19 @@ class AuthButton extends StatelessWidget {
           color: Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Center(
-          child: Text(
-            text.toUpperCase(),
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
-          ),
-        ),
+        child: loading
+            ? CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.onPrimary,
+              )
+            : Center(
+                child: Text(
+                  text.toUpperCase(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+              ),
       ),
     );
   }

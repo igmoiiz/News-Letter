@@ -8,11 +8,14 @@ environment:
 
 dependencies:
   encrypt: ^5.0.3
+  firebase_auth: ^5.3.3
+  firebase_core: ^3.8.0
   flutter:
     sdk: flutter
   fluttertoast: ^8.2.8
   google_fonts: ^6.2.1
   http: ^1.2.2
+  provider: ^6.1.2
   supabase_flutter: ^2.8.0
 
 dev_dependencies:

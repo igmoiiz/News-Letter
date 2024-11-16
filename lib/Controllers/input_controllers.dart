@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 
 class InputControllers {
   //  controllers for text form fields
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController nameController = TextEditingController();
+  late final TextEditingController emailController = TextEditingController();
+  late final TextEditingController passwordController = TextEditingController();
+  late final TextEditingController confirmPasswordController =
+      TextEditingController();
+  late final TextEditingController nameController = TextEditingController();
+
+  //  loading variable
+  bool loading = false;
 }

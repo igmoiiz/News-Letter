@@ -1,8 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:news_letter/Controllers/Services/auth_services.dart';
 import 'package:news_letter/Controllers/input_controllers.dart';
 import 'package:news_letter/View/Components/auth_button.dart';
 import 'package:news_letter/View/Components/my_form_field.dart';
+import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -14,9 +17,6 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   // instance for input controllers
   final inputControllers = InputControllers();
-
-  //  instance for authentication services
-  final authServices = AuthServices();
 
   @override
   Widget build(BuildContext context) {
@@ -73,25 +73,33 @@ class _SignUpPageState extends State<SignUpPage> {
                       iconData: Icons.password_sharp,
                       labelText: '***********',
                     ),
-                    SizedBox(height: height * 0.02),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        'Forgot Password?',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.inversePrimary,
-                        ),
-                      ),
+                    SizedBox(height: height * 0.01),
+                    MyFormField(
+                      obscureText: true,
+                      controller: inputControllers.confirmPasswordController,
+                      iconData: Icons.password_sharp,
+                      labelText: 'Confirm Password',
                     ),
                     SizedBox(height: height * 0.02),
-                    AuthButton(
-                        onTap: () {
-                          authServices.signUp();
-                        },
-                        text: 'Sign up'),
+                    Consumer<AuthServices>(
+                      builder: (context, value, child) {
+                        return AuthButton(
+                          loading: inputControllers.loading,
+                          onTap: () {
+                            value.signUpWithEmailAndPassword(
+                                inputControllers.emailController.text,
+                                inputControllers.passwordController.text,
+                                context);
+                          },
+                          text: 'Sign up',
+                        );
+                      },
+                    ),
                     SizedBox(height: height * 0.02),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, '/signIn');
+                      },
                       child: Text(
                         'Sign In'.toUpperCase(),
                         style: TextStyle(

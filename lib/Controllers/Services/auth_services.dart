@@ -1,65 +1,140 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:async';
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:news_letter/Controllers/Services/Utils/fluttertoast.dart';
 import 'package:news_letter/Controllers/input_controllers.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 
-class AuthServices {
-  //  instance for supabase
-  final supabase = Supabase.instance.client;
-
+class AuthServices extends ChangeNotifier {
   //  instance for input controllers
   final inputControllers = InputControllers();
-  //  method to encrypt the password
-  String encryptPassword(String password) {
-    final key = encrypt.Key.fromUtf8('12345678901234567890123456789012');
-    final iv = encrypt.IV.fromLength(16);
 
-    final encrypter = encrypt.Encrypter(encrypt.AES(key));
-    final encrypted = encrypter.encrypt(password, iv: iv);
+  //  instance for firebase authentication
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
-    return '${encrypted.base64}:${iv.base64}';
-  }
-
-  //  method to sign the user up into the database
-  Future<void> signUp() async {
+  // ! method to sign the user into the application
+  Future<void> signInWithEmailAndPassword(
+      String email, String password, BuildContext context) async {
     try {
-      final email = inputControllers.emailController.text;
-      final password = inputControllers.passwordController.text;
-      final name = inputControllers.nameController.text;
-
-      //  Encrypt the password
-      final encryptedPassword = encryptPassword(password);
-
-      //  store user in supabase
-      final response = await supabase.from('users').insert({
-        'email': email,
-        'name': name,
-        'password': encryptedPassword,
-      }).then((value) {
-        inputControllers.emailController.clear();
-        inputControllers.passwordController.clear();
-        inputControllers.nameController.clear();
+      //  set the loading variable to true
+      inputControllers.loading = true;
+      notifyListeners();
+      //  authenticate the user
+      await auth
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then((value) {
+        Future.delayed(const Duration(seconds: 3), () {
+          Navigator.popAndPushNamed(context, '/interface');
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
+            content: Text(
+              'Signed In Successfully!',
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            ),
+          ));
+        });
+      }).onError((error, stackTrace) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            error.toString(),
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+          ),
+        ));
       });
-
-      if (response != null && response.error == null) {
-        log('User signed up successfully');
-      } else if (response != null) {
-        log('Error signing up: ${response.error!.message}');
-      } else {
-        log('Error signing up: An unknown error occurred');
-      }
+    } on FirebaseAuthException catch (error) {
+      log(error.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            error.toString(),
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+          ),
+        ),
+      );
     } catch (e) {
       log(e.toString());
       throw Exception(e.toString());
+    } finally {
+      //  clear the input fields after sign in
+      inputControllers.emailController.clear();
+      inputControllers.passwordController.clear();
+      inputControllers.loading = false;
+      notifyListeners();
     }
   }
 
-  //  method to decrypt the password
-  String decryptPassword() {
-    return '';
+  // ! method to sign the user up for the application
+  Future<void> signUpWithEmailAndPassword(
+      String email, String password, BuildContext context) async {
+    try {
+      //  set the loading variable to true
+      inputControllers.loading = true;
+      notifyListeners();
+      //  authenticate the user
+      await auth
+          .createUserWithEmailAndPassword(email: email, password: password)
+          .then((value) {
+        Future.delayed(
+          const Duration(seconds: 3),
+          () {
+            Navigator.popAndPushNamed(context, '/interface');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Theme.of(context).colorScheme.tertiary,
+              content: Text(
+                'Signed Up Successfully!',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+              ),
+            ));
+          },
+        );
+      }).onError((error, stackTrace) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            error.toString(),
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+          ),
+        ));
+      });
+    } on FirebaseAuthException catch (error) {
+      log(error.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            error.toString(),
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+          ),
+        ),
+      );
+    } catch (e) {
+      log(e.toString());
+      throw Exception(e.toString());
+    } finally {
+      //  clear the input fields after sign in
+      inputControllers.emailController.clear();
+      inputControllers.passwordController.clear();
+      inputControllers.confirmPasswordController.clear();
+      inputControllers.nameController.clear();
+      inputControllers.loading = false;
+      notifyListeners();
+    }
   }
 
-  //  method to sign the user into the application
-  Future<void> signIn() async {}
+  // ! method to sign the user out of the application
+  Future<void> signOut() async {
+    try {
+      await auth.signOut();
+    } catch (error) {
+      log(error.toString());
+      Utils().toastMessage(error.toString());
+      throw Exception(error.toString());
+    }
+  }
 }
