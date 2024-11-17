@@ -5,7 +5,7 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:news_letter/Controllers/Services/Utils/fluttertoast.dart';
+import 'package:news_letter/Controllers/Utils/fluttertoast.dart';
 import 'package:news_letter/Controllers/input_controllers.dart';
 
 class AuthServices extends ChangeNotifier {

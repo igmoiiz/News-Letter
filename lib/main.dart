@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:news_letter/Controllers/Services/auth_services.dart';
+import 'package:news_letter/Models/Services/API/api_services.dart';
+import 'package:news_letter/Models/Services/Authentication%20Services/auth_services.dart';
 import 'package:news_letter/View/Authentication/forgot_password.dart';
 import 'package:news_letter/View/Authentication/login.dart';
 import 'package:news_letter/View/Authentication/signup.dart';
@@ -34,6 +35,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => AuthServices()),
+        ChangeNotifierProvider(create: (context) => ApiServices()),
       ],
       child: const MainApp(),
     ),

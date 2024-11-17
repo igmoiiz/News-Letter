@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:news_letter/Controllers/Services/auth_services.dart';
+import 'package:news_letter/Models/Services/Authentication%20Services/auth_services.dart';
 import 'package:news_letter/Controllers/input_controllers.dart';
 import 'package:news_letter/View/Components/auth_button.dart';
 import 'package:news_letter/View/Components/my_form_field.dart';
